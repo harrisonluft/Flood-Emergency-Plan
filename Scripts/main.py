@@ -1,11 +1,10 @@
 import os
-from bounding_box import MBR
+import rasterio
+from rasterio.windows import from_bounds
+import sys
+from bounding_box import Mbr
 
-cwd = os.getcwd()
-print(cwd)
-path = os.path.dirname(cwd)
-print(path)
-
+path = os.chdir('C:\\Users\\17075\\Assignment_2')
 
 def user_input():
     data_list = []
@@ -20,6 +19,15 @@ def user_input():
     return data_list
 
 
+#  from https://gis.stackexchange.com/questions/336874/
+#  get-a-window-from-a-raster-in-rasterio-using-coordinates-instead-of-row-column-o
+
+def import_raster(left, bottom, right, top):
+    with rasterio.open(os.path.join('Materials', 'elevation', 'SZ.asc')) as sz:
+        win = sz.read(1, window=from_bounds(left, bottom, right, top, sz.transform))
+    return win
+
+
 def main():
 
     # import data
@@ -27,13 +35,17 @@ def main():
 
     #  hardcode extent of bounding box
     extent = (430000, 80000, 465000, 95000)
-    mbr = MBR(extent)
+    mbr = Mbr(extent)
+    #  check if input point is within extent
     mbr.within_extent(input)
 
     # Verifying the bounding box works - test points are 1, 2 for fail
     # 450000, 85000 for pass
     print('On to step 2')
 
+    # import raster data
+    point = Point(input)
+    import_raster(extent[0], extent[1], extent[2], extent[3])
 
 
 if __name__ == '__main__':
