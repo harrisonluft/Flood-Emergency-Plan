@@ -1,6 +1,6 @@
 import sys
 
-class MBR:
+class Mbr:
 
     def __init__(self, extent):
         self.E1 = extent[0]

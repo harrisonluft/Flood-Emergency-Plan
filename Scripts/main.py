@@ -1,8 +1,13 @@
 import os
 import rasterio
+from rasterio import plot
 from rasterio.windows import from_bounds
-import sys
+from shapely.geometry import Point
+import numpy as np
 from bounding_box import Mbr
+from raster_buffer import RasterBuffer
+import matplotlib.pyplot as plt
+import geopandas as gpd
 
 path = os.chdir('C:\\Users\\17075\\Assignment_2')
 
@@ -44,9 +49,39 @@ def main():
     print('On to step 2')
 
     # import raster data
-    point = Point(input)
-    import_raster(extent[0], extent[1], extent[2], extent[3])
+    user_point = Point(input[0][0], input[0][1])
+    buffer = user_point.buffer(5000)
 
+    # initialize Rasterbuffer
+    test = RasterBuffer(buffer,
+                        os.path.join('Materials', 'elevation', 'SZ.asc'),
+                        os.path.join('Materials', 'elevation', '5k_mask.tif'))
+
+    test.clip_raster()
+
+    clipped = rasterio.open(os.path.join('Materials', 'elevation', '5k_mask.tif'))
+
+    #  reading raster as numpy array
+    matrix = clipped.read(1)
+
+    #  max height value
+    maxHeight = np.amax(matrix)
+    print('Max height from Numpy Array : ', maxHeight)
+
+    #  index of max height
+    result = np.where(matrix == np.amax(matrix))
+    print('Returned tuple of arrays :', result)
+
+    #  coordinates of max height and geodataframe construction
+    high_point = clipped.xy(result[0], result[1])
+    gdf = gpd.GeoDataFrame(geometry=gpd.points_from_xy(high_point[0], high_point[1]))
+
+    #  Plotting taken from
+    #  https://gis.stackexchange.com/questions/294072/how-can-i-superimpose-a-geopandas-dataframe-on-a-raster-plot
+    fig, ax = plt.subplots()
+    rasterio.plot.show(clipped, ax=ax)
+    gdf.plot(ax=ax, color='red')
+    plt.show()
 
 if __name__ == '__main__':
 
