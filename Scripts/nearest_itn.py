@@ -1,33 +1,33 @@
 import json
-import os
 from shapely.geometry import Point
-from shapely.geometry import mapping
-import fiona
-import networkx as nx
 from rtree import index
 
 
-os.chdir('C:\\Users\\17075\\Assignment_2')
+class Itn:
 
-# JSON file
-with open(os.path.join('Materials','itn', 'solent_itn.json'), "r") as f:
-    itn = json.load(f)
+    def __init__(self, itn_path):
+        self.itn_path = itn_path
 
-nodes = itn['roadnodes']
-# visualizing dictionary
-# print(nodes["osgb5000005195408406"]["coords"][0])
+    def itn_index(self):
+
+        # JSON file
+        with open(self.itn_path, "r") as self.f:
+            self.itn = json.load(self.f)
+
+        self.nodes = self.itn['roadnodes']
+
+        self.idx = index.Index()
+        self.id = 0
+        self.id_list = []
+        for key, value in self.nodes.items():
+            self.point = Point(float(value["coords"][0]), float(value["coords"][1]))
+            self.idx.insert(self.id, (self.point.x, self.point.y))
+            self.id_list.append([key])
+            self.id += 1
 
 
-idx = index.Index()
-id = 0
-id_list = []
-for key, value in nodes.items():
-    point = Point(float(value["coords"][0]), float(value["coords"][1]))
-    idx.insert(id, (point.x, point.y))
-    id_list.append([key])
-    id += 1
+    def nearest_node(self, user_input):
 
-user_input = Point(450000, 85000)
+        for i in self.idx.nearest((user_input.x, user_input.y), 1):
+            return print(i, self.id_list[i])
 
-for i in idx.nearest((user_input.x, user_input.y), 1):
-    print(i, id_list[i])
