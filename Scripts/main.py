@@ -1,7 +1,6 @@
 import os
 import rasterio
 from rasterio import plot
-from rasterio.windows import from_bounds
 from shapely.geometry import Point
 import numpy as np
 from bounding_box import Mbr
@@ -10,7 +9,7 @@ from nearest_itn import Itn
 import matplotlib.pyplot as plt
 import geopandas as gpd
 
-path = os.chdir('C:\\Users\\17075\\Assignment_2')
+os.chdir('C:\\Users\\17075\\Assignment_2')
 
 
 def user_input():
@@ -47,8 +46,8 @@ def main():
 
     # initialize Rasterbuffer(buffer, raster in path, clipped raster out path)
     step_2 = RasterBuffer(buffer,
-                        os.path.join('Materials', 'elevation', 'SZ.asc'),
-                        os.path.join('Materials', 'elevation', '5k_mask.tif'))
+                          os.path.join('Materials', 'elevation', 'SZ.asc'),
+                          os.path.join('Materials', 'elevation', '5k_mask.tif'))
 
     # clip raster to 5km circle
     step_2.clip_raster()
@@ -75,10 +74,10 @@ def main():
 
     # Plotting taken from
     # https://gis.stackexchange.com/questions/294072/how-can-i-superimpose-a-geopandas-dataframe-on-a-raster-plot
-    # fig, ax = plt.subplots()
-    # rasterio.plot.show(clipped, ax=ax)
-    # gdf.plot(ax=ax, color='red')
-    # plt.show()
+    fig, ax = plt.subplots()
+    rasterio.plot.show(clipped, ax=ax)
+    gdf.plot(ax=ax, color='red')
+    plt.show()
 
     # Step 3 importing ITN network
     print('On to step 3')
@@ -87,7 +86,9 @@ def main():
 
     # nearest nodes to both the user input and highest points
     step_3.itn_index()
+    # user input nearest ITN node
     step_3.nearest_node(user_point)
+    # highest point nearest ITN node
     step_3.nearest_node(high_point_obj)
 
 
