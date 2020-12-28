@@ -12,6 +12,7 @@ import geopandas as gpd
 
 path = os.chdir('C:\\Users\\17075\\Assignment_2')
 
+
 def user_input():
     data_list = []
     while True:
@@ -24,12 +25,13 @@ def user_input():
     data_list.append(user_point_float)
     return data_list
 
+
 def main():
 
     # import data
     input = user_input()
 
-    #  hardcode extent of bounding box
+    # hardcode extent of bounding box
     extent = (430000, 80000, 465000, 95000)
     mbr = Mbr(extent)
     #  check if input point is within extent
@@ -43,21 +45,23 @@ def main():
     user_point = Point(input[0][0], input[0][1])
     buffer = user_point.buffer(5000)
 
-    # initialize Rasterbuffer
-    test = RasterBuffer(buffer,
+    # initialize Rasterbuffer(buffer, raster in path, clipped raster out path)
+    step_2 = RasterBuffer(buffer,
                         os.path.join('Materials', 'elevation', 'SZ.asc'),
                         os.path.join('Materials', 'elevation', '5k_mask.tif'))
 
-    test.clip_raster()
+    # clip raster to 5km circle
+    step_2.clip_raster()
 
+    # import 5km clipped raster
     clipped = rasterio.open(os.path.join('Materials', 'elevation', '5k_mask.tif'))
 
-    #  reading raster as numpy array
+    # reading raster as numpy array
     matrix = clipped.read(1)
 
-    #  max height value
-    maxHeight = np.amax(matrix)
-    print('Max height from Numpy Array : ', maxHeight)
+    # max height value
+    max_height = np.amax(matrix)
+    print('Max height from Numpy Array : ', max_height)
 
     #  index of max height
     result = np.where(matrix == np.amax(matrix))
@@ -69,8 +73,8 @@ def main():
     print(high_point_obj)
     gdf = gpd.GeoDataFrame(geometry=gpd.points_from_xy(high_point[0], high_point[1]))
 
-    #  Plotting taken from
-    #  https://gis.stackexchange.com/questions/294072/how-can-i-superimpose-a-geopandas-dataframe-on-a-raster-plot
+    # Plotting taken from
+    # https://gis.stackexchange.com/questions/294072/how-can-i-superimpose-a-geopandas-dataframe-on-a-raster-plot
     # fig, ax = plt.subplots()
     # rasterio.plot.show(clipped, ax=ax)
     # gdf.plot(ax=ax, color='red')
@@ -86,7 +90,7 @@ def main():
     step_3.nearest_node(user_point)
     step_3.nearest_node(high_point_obj)
 
+
 if __name__ == '__main__':
 
     main()
-
