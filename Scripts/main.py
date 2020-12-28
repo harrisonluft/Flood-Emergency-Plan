@@ -6,6 +6,7 @@ from shapely.geometry import Point
 import numpy as np
 from bounding_box import Mbr
 from raster_buffer import RasterBuffer
+from nearest_itn import Itn
 import matplotlib.pyplot as plt
 import geopandas as gpd
 
@@ -22,16 +23,6 @@ def user_input():
             print('Invalid input, please try again')
     data_list.append(user_point_float)
     return data_list
-
-
-#  from https://gis.stackexchange.com/questions/336874/
-#  get-a-window-from-a-raster-in-rasterio-using-coordinates-instead-of-row-column-o
-
-def import_raster(left, bottom, right, top):
-    with rasterio.open(os.path.join('Materials', 'elevation', 'SZ.asc')) as sz:
-        win = sz.read(1, window=from_bounds(left, bottom, right, top, sz.transform))
-    return win
-
 
 def main():
 
@@ -70,18 +61,30 @@ def main():
 
     #  index of max height
     result = np.where(matrix == np.amax(matrix))
-    print('Returned tuple of arrays :', result)
+    print('Max height index from Numpy Array:', result)
 
     #  coordinates of max height and geodataframe construction
     high_point = clipped.xy(result[0], result[1])
+    high_point_obj = Point(float(high_point[0][0]), float(high_point[1][0]))
+    print(high_point_obj)
     gdf = gpd.GeoDataFrame(geometry=gpd.points_from_xy(high_point[0], high_point[1]))
 
     #  Plotting taken from
     #  https://gis.stackexchange.com/questions/294072/how-can-i-superimpose-a-geopandas-dataframe-on-a-raster-plot
-    fig, ax = plt.subplots()
-    rasterio.plot.show(clipped, ax=ax)
-    gdf.plot(ax=ax, color='red')
-    plt.show()
+    # fig, ax = plt.subplots()
+    # rasterio.plot.show(clipped, ax=ax)
+    # gdf.plot(ax=ax, color='red')
+    # plt.show()
+
+    # Step 3 importing ITN network
+    print('On to step 3')
+
+    step_3 = Itn(os.path.join('Materials', 'itn', 'solent_itn.json'))
+
+    # nearest nodes to both the user input and highest points
+    step_3.itn_index()
+    step_3.nearest_node(user_point)
+    step_3.nearest_node(high_point_obj)
 
 if __name__ == '__main__':
 
