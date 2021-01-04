@@ -6,11 +6,15 @@ import numpy as np
 from bounding_box import Mbr
 from raster_buffer import RasterBuffer
 from nearest_itn import Itn
+from ShortestPath import ShortestPath
+from MapPlotting import MapPlotting
 import matplotlib.pyplot as plt
 import geopandas as gpd
 
-os.chdir('C:\\Users\\17075\\Assignment_2')
-
+#path = os.chdir('C:\\Users\\17075\\Assignment_2')
+path = os.chdir('/Users/linchengze/PycharmProjects/Assignment_2')
+retval = os.getcwd()
+print("Current working directory: %s" % retval)
 
 def user_input():
     data_list = []
@@ -48,6 +52,8 @@ def main():
     step_2 = RasterBuffer(buffer,
                           os.path.join('Materials', 'elevation', 'SZ.asc'),
                           os.path.join('Materials', 'elevation', '5k_mask.tif'))
+
+
 
     # clip raster to 5km circle
     step_2.clip_raster()
@@ -90,6 +96,21 @@ def main():
     step_3.nearest_node(user_point)
     # highest point nearest ITN node
     step_3.nearest_node(high_point_obj)
+
+
+
+    # step 4 shortest path with naismith's rules iterating through each link segment
+    print('On to step 4')
+    step_4 = ShortestPath(step_3.get_nearest_node(user_point)[0], step_3.get_nearest_node(high_point_obj)[0])
+    step_4.get_itn_and_elevation()
+    step_4.create_graph()
+    shortest_path = step_4.get_shortest_path()[0]
+    print('Shortest path: ' + str(shortest_path))
+
+    print('On to step 5')
+    step_5 = MapPlotting(shortest_path)
+    step_5.show_path()
+
 
 
 if __name__ == '__main__':

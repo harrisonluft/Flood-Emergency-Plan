@@ -29,3 +29,10 @@ class Itn:
 
         for i in self.idx.nearest((user_input.x, user_input.y), 1):
             return print(i, self.id_list[i])
+
+
+    def get_nearest_node(self, user_input):
+
+        for i in self.idx.nearest((user_input.x, user_input.y), 1):
+            return self.id_list[i]
+
