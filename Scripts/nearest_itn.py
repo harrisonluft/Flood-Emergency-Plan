@@ -25,7 +25,6 @@ class Itn:
             self.id_list.append([key])
             self.id += 1
 
-
     def nearest_node(self, user_input):
 
         for i in self.idx.nearest((user_input.x, user_input.y), 1):
@@ -36,9 +35,4 @@ class Itn:
 
         for i in self.idx.nearest((user_input.x, user_input.y), 1):
             return self.id_list[i]
-
-
-
-
-
 
