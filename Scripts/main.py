@@ -8,6 +8,7 @@ from bounding_box import Mbr
 from raster_buffer import RasterBuffer
 from nearest_itn import Itn
 from ShortestPath import ShortestPath
+from MapPlotting import MapPlotting
 import matplotlib.pyplot as plt
 import geopandas as gpd
 
@@ -106,6 +107,8 @@ def main():
     print('Shortest path: ' + str(shortest_path))
 
     print('On to step 5')
+    step_5 = MapPlotting(shortest_path)
+    step_5.show_path()
 
 
 
