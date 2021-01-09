@@ -8,52 +8,77 @@ from raster_buffer import RasterBuffer
 from nearest_itn import Itn
 from ShortestPath import ShortestPath
 from MapPlotting import MapPlotting
+# add merge dem class
+from merge_dem import MergeDEM
 import matplotlib.pyplot as plt
 import geopandas as gpd
 
 #path = os.chdir('C:\\Users\\17075\\Assignment_2')
-path = os.chdir('/Users/linchengze/PycharmProjects/Assignment_2')
+path = os.chdir('/Users/Andy/Desktop/python_task/')
+
 retval = os.getcwd()
 print("Current working directory: %s" % retval)
-
+rasterio.transform
 def user_input():
     data_list = []
     while True:
         try:
-            user_point = input('Please input coordinate as Eastings, Northings: ')
+            # if you want run the program with task 6
+            IF_TASK_6 = input('If you want run the program with task 6, please input (yes or no): ')
+
+            if (IF_TASK_6 == "yes"):
+                user_point = input('Please input coordinate as Eastings, Northings (with task 6): ')
+                user_point_float = [float(user_point.split(',')[0]), float(user_point.split(',')[1])]
+            elif (IF_TASK_6 == "no"):
+                user_point = input('Please input coordinate as Eastings, Northings (without task 6): ')
+            else:
+                raise Exception
             user_point_float = [float(user_point.split(',')[0]), float(user_point.split(',')[1])]
             break
         except:
             print('Invalid input, please try again')
     data_list.append(user_point_float)
-    return data_list
+    return data_list, IF_TASK_6
 
 
 def main():
 
     # import data
-    input = user_input()
+    input, IF_TASK_6 = user_input()
 
-    # hardcode extent of bounding box
-    extent = (430000, 80000, 465000, 95000)
-    mbr = Mbr(extent)
-    #  check if input point is within extent
-    mbr.within_extent(input)
+    # if program run with task_6, the validation of bounding box is not work
+    if (IF_TASK_6 == "no"):
+        # hardcode extent of bounding box
+        extent = (430000, 80000, 465000, 95000)
+        mbr = Mbr(extent)
+        #  check if input point is within extent
+        mbr.within_extent(input)
+        # Verifying the bounding box works - test points are 1, 2 for fail
+        # 450000, 85000 for pass
 
-    # Verifying the bounding box works - test points are 1, 2 for fail
-    # 450000, 85000 for pass
     print('On to step 2')
 
     # import raster data
     user_point = Point(input[0][0], input[0][1])
     buffer = user_point.buffer(5000)
 
-    # initialize Rasterbuffer(buffer, raster in path, clipped raster out path)
-    step_2 = RasterBuffer(buffer,
-                          os.path.join('Materials', 'elevation', 'SZ.asc'),
+    # if the task 6 included ?
+
+    if (IF_TASK_6 == "yes"):
+        step_2_merge_dem = MergeDEM(
+            os.path.join('Materials', 'elevation', 'task_6_elevation', 'sz'),
+            os.path.join('Materials', 'elevation', 'task_6_elevation'))
+        step_2_merge_dem.merge_dems()
+        # initialize Rasterbuffer(buffer, raster in path, clipped raster out path)
+        step_2 = RasterBuffer(buffer,
+                          os.path.join('Materials', 'elevation', 'task_6_elevation', 'Elevation_Merge_Mosaic.tif'),
                           os.path.join('Materials', 'elevation', '5k_mask.tif'))
 
-
+    elif (IF_TASK_6 == "no"):
+        # initialize Rasterbuffer(buffer, raster in path, clipped raster out path)
+        step_2 = RasterBuffer(buffer,
+                              os.path.join('Materials', 'elevation', 'SZ.asc'),
+                              os.path.join('Materials', 'elevation', '5k_mask.tif'))
 
     # clip raster to 5km circle
     step_2.clip_raster()
