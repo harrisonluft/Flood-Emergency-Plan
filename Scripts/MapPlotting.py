@@ -93,7 +93,7 @@ class MapPlotting:
         ax.scatter(self.highest_point.x, self.highest_point.y, marker='.', c='brown', zorder=3, label='Highest Point')
         ax.legend(loc='lower right', prop={'size': 5})
 
-        # add transparent elavation raster
+        # add transparent elevation raster
         buffer_5km = self.user_point.buffer(5000)
         elevation = rasterio.open(os.path.join('Materials', 'elevation', 'SZ.asc'))
         elevation_boundary = elevation.bounds
