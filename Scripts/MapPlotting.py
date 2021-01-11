@@ -109,10 +109,10 @@ class MapPlotting:
                            ax=ax, zorder=1, cmap='terrain')
         norm = cm.colors.Normalize(vmax=numpy.max(clipped_elevation),
                                    vmin=numpy.min(clipped_elevation))
-        colourmap = plt.cm.ScalarMappable(norm=norm, cmap='terrain')
+        colormap = plt.cm.ScalarMappable(norm=norm, cmap='terrain')
 
-        # add colorbar for elevation
-        plt.colorbar(colourmap, label='Elevation within 5km', shrink=0.75)
+        # add color-bar for elevation
+        plt.colorbar(colormap, label='Elevation within 5km', shrink=0.75)
 
         plt.show()
 
