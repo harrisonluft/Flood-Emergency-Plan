@@ -107,10 +107,8 @@ def main():
     print('Shortest path: ' + str(shortest_path))
 
     print('On to step 5')
-    step_5 = MapPlotting(shortest_path, user_point, high_point_obj)
+    step_5 = MapPlotting(shortest_path)
     step_5.show_path()
-
-
 
 
 

@@ -1,5 +1,6 @@
 import sys
 
+
 class Mbr:
 
     def __init__(self, extent):
@@ -15,7 +16,8 @@ class Mbr:
         self.max_y = max(self.N1, self.N2)
 
         if (input[0][0] > self.max_x) or (input[0][1] > self.max_y) or \
-            (input[0][0] < self.min_x) or (input[0][1] < self.min_y):
+           (input[0][0] < self.min_x) or (input[0][1] < self.min_y):
 
             print('Number provided is outside map extent')
+            print('Closing application...')
             return sys.exit(0)
