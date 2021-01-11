@@ -14,7 +14,7 @@ from on_island import Contains
 import matplotlib.pyplot as plt
 import geopandas as gpd
 
-path = os.chdir('C:\\Users\\17075\\Assignment_2')
+os.chdir('C:\\Users\\17075\\Assignment_2')
 #path = os.chdir('/Users/linchengze/PycharmProjects/Assignment_2')
 retval = os.getcwd()
 print("Current working directory: %s" % retval)
@@ -54,10 +54,6 @@ def main():
         mbr.within_extent(input)
         print('on to step 2')
 
-    # Verifying the bounding box works
-    # 450000, 85000 for pass within extent
-    # 450728, 76762 for pass within island
-    # 450728, 73000 for fail outside of extent and island
     else:
         # task 6
         step_6 = Contains(gdf, os.path.join('Materials', 'shape', 'isle_of_wight.shp'))
