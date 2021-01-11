@@ -1,24 +1,22 @@
 import os
-import sys
 import rasterio
 from rasterio import plot
+from rasterio.windows import from_bounds
 from shapely.geometry import Point
-from pyproj import CRS
 import numpy as np
 from bounding_box import Mbr
 from raster_buffer import RasterBuffer
 from nearest_itn import Itn
 from ShortestPath import ShortestPath
 from MapPlotting import MapPlotting
-from on_island import Contains
 import matplotlib.pyplot as plt
 import geopandas as gpd
+
 
 os.chdir('C:\\Users\\17075\\Assignment_2')
 #path = os.chdir('/Users/linchengze/PycharmProjects/Assignment_2')
 retval = os.getcwd()
 print("Current working directory: %s" % retval)
-
 
 def user_input():
     data_list = []
@@ -33,15 +31,11 @@ def user_input():
     return data_list
 
 
-def one_or_six():
-    one_or_six = input('Would you like the software to run via task 1 or task 6 (enter 1 or 6): ')
-    return int(one_or_six)
-
-
 def main():
 
     # import data
     input = user_input()
+
     user_gpd = {'geometry': [Point(input[0][0], input[0][1])]}
     gdf = gpd.GeoDataFrame(user_gpd, index=[0], crs='EPSG:27700')
 
@@ -63,6 +57,17 @@ def main():
             print('Not on the Isle of Wight - Stay where you are!')
             print('Closing application...')
             sys.exit(0)
+            
+    # hardcode extent of bounding box
+    extent = (430000, 80000, 465000, 95000)
+    mbr = Mbr(extent)
+    #  check if input point is within extent
+    mbr.within_extent(input)
+
+    # Verifying the bounding box works - test points are 1, 2 for fail
+    # 450000, 85000 for pass
+    print('On to step 2')
+
 
     # import raster data
     user_point = Point(input[0][0], input[0][1])
@@ -70,8 +75,10 @@ def main():
 
     # initialize Rasterbuffer(buffer, raster in path, clipped raster out path)
     step_2 = RasterBuffer(buffer,
-                          os.path.join('Materials', 'elevation', 'SZ.asc'),
-                          os.path.join('Materials', 'elevation', '5k_mask.tif'))
+                        os.path.join('Materials', 'elevation', 'SZ.asc'),
+                        os.path.join('Materials', 'elevation', '5k_mask.tif'))
+
+
 
     # clip raster to 5km circle
     step_2.clip_raster()
@@ -87,38 +94,33 @@ def main():
     print('Max height from Numpy Array : ', max_height)
 
     #  index of max height
-    result = np.where(matrix == max_height)
+    result = np.where(matrix == np.amax(matrix))
     print('Max height index from Numpy Array:', result)
 
     #  coordinates of max height and geodataframe construction
     high_point = clipped.xy(result[0], result[1])
     high_point_obj = Point(float(high_point[0][0]), float(high_point[1][0]))
     print(high_point_obj)
-    high_point_gdf = gpd.GeoDataFrame(geometry=gpd.points_from_xy(high_point[0], high_point[1]))
+    gdf = gpd.GeoDataFrame(geometry=gpd.points_from_xy(high_point[0], high_point[1]))
 
     # Plotting taken from
     # https://gis.stackexchange.com/questions/294072/how-can-i-superimpose-a-geopandas-dataframe-on-a-raster-plot
     # fig, ax = plt.subplots()
     # rasterio.plot.show(clipped, ax=ax)
-    # high_point_gdf.plot(ax=ax, color='red')
+    # gdf.plot(ax=ax, color='red')
     # plt.show()
 
-    if high_point_obj == user_point:
-        print('You are already at the highest point! ')
-        print('Closing application...')
-        sys.exit(0)
-    else:
-        print('On to step 3')
     # Step 3 importing ITN network
+    print('On to step 3')
 
     step_3 = Itn(os.path.join('Materials', 'itn', 'solent_itn.json'))
 
     # nearest nodes to both the user input and highest points
     step_3.itn_index()
-    # user input nearest ITN node
     step_3.nearest_node(user_point)
-    # highest point nearest ITN node
     step_3.nearest_node(high_point_obj)
+
+
 
     # step 4 shortest path with naismith's rules iterating through each link segment
     print('On to step 4')
@@ -126,13 +128,12 @@ def main():
     step_4.get_itn_and_elevation()
     step_4.create_graph()
     shortest_path = step_4.get_shortest_path()[0]
-    shortest_path_time = step_4.get_shortest_path()[1]
     print('Shortest path: ' + str(shortest_path))
-    print('Shortest path time: ' + str(shortest_path_time))
 
     print('On to step 5')
-    step_5 = MapPlotting(shortest_path)
+    step_5 = MapPlotting(shortest_path, user_point, high_point_obj)
     step_5.show_path()
+
 
 
 if __name__ == '__main__':

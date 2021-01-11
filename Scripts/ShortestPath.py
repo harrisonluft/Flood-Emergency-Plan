@@ -5,7 +5,6 @@ import rasterio
 import numpy as np
 
 
-
 class ShortestPath:
 
     def __init__(self, source_point, target_point):
