@@ -96,8 +96,6 @@ def main():
     step_3.nearest_node(user_point)
     step_3.nearest_node(high_point_obj)
 
-
-
     # step 4 shortest path with naismith's rules iterating through each link segment
     print('On to step 4')
     step_4 = ShortestPath(step_3.get_nearest_node(user_point)[0], step_3.get_nearest_node(high_point_obj)[0])
@@ -106,6 +104,7 @@ def main():
     shortest_path = step_4.get_shortest_path()[0]
     print('Shortest path: ' + str(shortest_path))
 
+    # step 5 Map plotting
     print('On to step 5')
     step_5 = MapPlotting(shortest_path, user_point, high_point_obj)
     step_5.show_path()
