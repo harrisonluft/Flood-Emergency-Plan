@@ -68,6 +68,9 @@ class MapPlotting:
 
         ax.set_extent(display_extent, crs=crs.OSGB())
 
+        # add title for the map
+        ax.set_title(label='Flood Emergency Planning', fontdict={'fontsize': 14})
+
         # add north arrow
         x = 0.95
         y = 0.95
