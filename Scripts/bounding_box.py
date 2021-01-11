@@ -19,4 +19,5 @@ class Mbr:
            (input[0][0] < self.min_x) or (input[0][1] < self.min_y):
 
             print('Number provided is outside map extent')
+            print('Closing application...')
             return sys.exit(0)
