@@ -1,3 +1,4 @@
+import json
 import rasterio
 from rasterio import mask
 import geopandas as gpd
@@ -16,8 +17,7 @@ class RasterBuffer:
         self.geo = gpd.GeoDataFrame({'geometry': self.buffer}, index=[0], crs=CRS.from_epsg(27700))
 
         def getfeatures(gdf):
-            """Static method to parse features from GeoDataFrame in such a manner that rasterio wants them"""
-            import json
+            """Static method to parse features from GeoDataFrame in to a GeoJSON format"""
             return [json.loads(gdf.to_json())['features'][0]['geometry']]
 
         self.coords = getfeatures(self.geo)
