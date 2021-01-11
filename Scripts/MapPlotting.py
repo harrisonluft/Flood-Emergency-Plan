@@ -69,7 +69,7 @@ class MapPlotting:
         ax.set_extent(display_extent, crs=crs.OSGB())
 
         # add title for the map
-        ax.set_title(label='Flood Emergency Planning', fontdict={'fontsize': 14})
+        ax.set_title(label='Flood Emergency Planning', fontdict={'fontsize': 8})
 
         # add north arrow
         x = 0.95
@@ -111,7 +111,7 @@ class MapPlotting:
         colourmap = plt.cm.ScalarMappable(norm=norm, cmap='terrain')
 
         # add colorbar for elevation
-        plt.colorbar(colourmap, label='Elevation within 5km (m)')
+        plt.colorbar(colourmap, label='Elevation within 5km', shrink=0.75)
 
         plt.show()
 

@@ -11,8 +11,7 @@ from MapPlotting import MapPlotting
 import geopandas as gpd
 
 
-os.chdir('C:\\Users\\17075\\Assignment_2')
-#path = os.chdir('/Users/linchengze/PycharmProjects/Assignment_2')
+os.chdir('INSERT PATH HERE')
 retval = os.getcwd()
 print("Current working directory: %s" % retval)
 
@@ -86,8 +85,10 @@ def main():
 
     # nearest nodes to both the user input and highest points
     step_3.itn_index()
-    print('Nearest ITN node to user: ' + step_3.nearest_node(user_point))
-    print('Nearest ITN node to highest point:' + step_3.nearest_node(high_point_obj))
+    print('Nearest ITN node to user: ')
+    step_3.nearest_node(user_point)
+    print('Nearest ITN node to highest point:')
+    step_3.nearest_node(high_point_obj)
 
     # step 4 shortest path with naismith's rules iterating through each link segment
     print('On to step 4')
