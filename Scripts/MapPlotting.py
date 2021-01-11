@@ -88,11 +88,12 @@ class MapPlotting:
                              border_pad=1, sep=3, rotation="horizontal")
         ax.add_artist(scale_bar)
 
+        # add user point and highest point
         ax.scatter(self.user_point.x, self.user_point.y, marker='.', c='pink', zorder=3, label='User Point', )
         ax.scatter(self.highest_point.x, self.highest_point.y, marker='.', c='brown', zorder=3, label='Highest Point')
         ax.legend(loc='lower right', prop={'size': 5})
 
-        # 5km buffer (transparent elavation raster)
+        # add transparent elavation raster
         buffer_5km = self.user_point.buffer(5000)
         elevation = rasterio.open(os.path.join('Materials', 'elevation', 'SZ.asc'))
         elevation_boundary = elevation.bounds
