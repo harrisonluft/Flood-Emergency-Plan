@@ -21,7 +21,8 @@ class ShortestPath:
         self.dataset = rasterio.open(os.path.join('Materials', 'elevation', 'SZ.asc'))
         self.elevation_raster = self.dataset.read(1)
 
-
+    # calculate weight for both direction of the egde using naismith's ruls
+    # iterating through each link segment
     def weight_calculate(self, length, coords):
 
         temp_coords = []
@@ -48,7 +49,7 @@ class ShortestPath:
 
         return weight_start_end, weight_end_start
 
-
+    # create a Digraph so each direction has its own weight
     def create_graph(self):
 
         self.g = nx.DiGraph()
@@ -60,11 +61,12 @@ class ShortestPath:
             self.g.add_edge(road_links[link]['start'], road_links[link]['end'], fid=link, weight=weight1)
             self.g.add_edge(road_links[link]['end'], road_links[link]['start'], fid=link, weight=weight2)
 
-
+    # get and return shortest path
     def get_shortest_path(self):
 
-        shortest_path = nx.dijkstra_path(self.g, source=str(self.source_point), target=str(self.target_point), weight='weight')
-        shortest_path_time = nx.shortest_path_length(self.g, source=str(self.source_point), target=str(self.target_point), weight='weight')
+        shortest_path = nx.dijkstra_path(self.g, source=str(self.source_point),
+                                         target=str(self.target_point), weight='weight')
+        shortest_path_time = nx.shortest_path_length(self.g, source=str(self.source_point),
+                                                     target=str(self.target_point), weight='weight')
 
         return shortest_path, shortest_path_time
-

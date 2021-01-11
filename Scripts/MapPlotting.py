@@ -13,6 +13,7 @@ import networkx as nx
 import numpy
 from matplotlib_scalebar.scalebar import ScaleBar
 
+
 class MapPlotting:
 
     def __init__(self, path, user_point, highest_point):
@@ -21,8 +22,8 @@ class MapPlotting:
         self.highest_point = highest_point
 
     def show_path(self):
-        #convert shortest path to geodataframe
-        #refenrence: https://github.com/aldolipani/CEGE0096/blob/master/8%20-%20Week/8%20-%20RTree%20and%20NetworkX%20with%20Solutions.ipynb
+        # convert shortest path to geodataframe
+        # refenrence: https://github.com/aldolipani/CEGE0096/blob/master/8%20-%20Week/8%20-%20RTree%20and%20NetworkX%20with%20Solutions.ipynb
         itn_json = os.path.join('Materials', 'itn', 'solent_itn.json')
         with open(itn_json, 'r') as f:
             itn = json.load(f)
@@ -44,16 +45,19 @@ class MapPlotting:
 
         shortest_path_gpd = gpd.GeoDataFrame({'fid': links, 'geometry': geom})
 
-
-        #add background
+        # add background
         wight_background = os.path.join('Materials', 'background', 'raster-50k_2724246.tif')
         background = rasterio.open(wight_background)
         back_array = background.read(1)
         palette = np.array([value for key, value in background.colormap(1).items()])
         background_image = palette[back_array]
         bounds = background.bounds
+        print(bounds)
         extent = [bounds.left, bounds.right, bounds.bottom, bounds.top]
-        display_extent = [bounds.left, bounds.right, bounds.bottom, bounds.top]
+
+        # set 10km * 10km background map
+        display_extent = [self.user_point.x - 5000, self.user_point.x + 5000,
+                          self.user_point.y - 5000, self.user_point.y + 5000]
 
         fig = plt.figure(figsize=(3, 3), dpi=300)
         ax = fig.add_subplot(1, 1, 1, projection=crs.OSGB())
@@ -63,6 +67,9 @@ class MapPlotting:
         shortest_path_gpd.plot(ax=ax, edgecolor='blue', linewidth=0.5, zorder=2)
 
         ax.set_extent(display_extent, crs=crs.OSGB())
+
+        # add title for the map
+        ax.set_title(label='Flood Emergency Planning', fontdict={'fontsize': 14})
 
         # add north arrow
         x = 0.95
@@ -81,14 +88,13 @@ class MapPlotting:
                              border_pad=1, sep=3, rotation="horizontal")
         ax.add_artist(scale_bar)
 
-        ax.scatter(self.user_point.x, self.user_point.y, marker = '.', c='pink', zorder=3, label='User Point', )
-        ax.scatter(self.highest_point.x, self.highest_point.y, marker = '.', c='brown', zorder=3, label='Highest Point')
+        ax.scatter(self.user_point.x, self.user_point.y, marker='.', c='pink', zorder=3, label='User Point', )
+        ax.scatter(self.highest_point.x, self.highest_point.y, marker='.', c='brown', zorder=3, label='Highest Point')
         ax.legend(loc='lower right', prop={'size': 5})
-
 
         # 5km buffer (transparent elavation raster)
         buffer_5km = self.user_point.buffer(5000)
-        elevation = rasterio.open(os.path.join('Materials','elevation','SZ.asc'))
+        elevation = rasterio.open(os.path.join('Materials', 'elevation', 'SZ.asc'))
         elevation_boundary = elevation.bounds
         elevation_polygon = Polygon([(elevation_boundary[0], elevation_boundary[1]),
                                      (elevation_boundary[2], elevation_boundary[1]),
@@ -104,10 +110,8 @@ class MapPlotting:
                                    vmin=numpy.min(clipped_elevation))
         colourmap = plt.cm.ScalarMappable(norm=norm, cmap='terrain')
 
-        #add colorbar for elevation
+        # add colorbar for elevation
         plt.colorbar(colourmap, label='Elevation within 5km (m)')
-
-
 
         plt.show()
 
