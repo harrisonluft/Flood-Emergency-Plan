@@ -16,7 +16,7 @@ class Contains:
         self.spatial_index = self.gpd_point.sindex
         possible_matches_index = list(self.spatial_index.intersection(self.polygon.bounds))
         possible_matches = self.gpd_point.iloc[possible_matches_index]
-        precise_matches = possible_matches[possible_matches.intersects(self.shapefile)]
+        precise_matches = possible_matches[possible_matches.intersects(self.polygon)]
 
         if precise_matches.empty:
             return False
