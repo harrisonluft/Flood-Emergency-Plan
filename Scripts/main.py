@@ -19,6 +19,7 @@ path = os.chdir('C:\\Users\\17075\\Assignment_2')
 retval = os.getcwd()
 print("Current working directory: %s" % retval)
 
+
 def user_input():
     data_list = []
     while True:
@@ -31,9 +32,11 @@ def user_input():
     data_list.append(user_point_float)
     return data_list
 
+
 def one_or_six():
     one_or_six = input('Would you like the software to run via task 1 or task 6 (enter 1 or 6): ')
     return int(one_or_six)
+
 
 def main():
 
@@ -59,11 +62,11 @@ def main():
         # task 6
         step_6 = Contains(gdf, os.path.join('Materials', 'shape', 'isle_of_wight.shp'))
         if step_6.is_within_geo():
-             print('On to step 2')
+            print('On to step 2')
         else:
-             print('Not on the Isle of Wight - Stay where you are!')
-             sys.exit(0)
-
+            print('Not on the Isle of Wight - Stay where you are!')
+            print('Closing application...')
+            sys.exit(0)
 
     # import raster data
     user_point = Point(input[0][0], input[0][1])
@@ -104,8 +107,13 @@ def main():
     # high_point_gdf.plot(ax=ax, color='red')
     # plt.show()
 
+    if high_point_obj == user_point:
+        print('You are already at the highest point! ')
+        print('Closing application...')
+        sys.exit(0)
+    else:
+        print('On to step 3')
     # Step 3 importing ITN network
-    print('On to step 3')
 
     step_3 = Itn(os.path.join('Materials', 'itn', 'solent_itn.json'))
 
@@ -115,8 +123,6 @@ def main():
     step_3.nearest_node(user_point)
     # highest point nearest ITN node
     step_3.nearest_node(high_point_obj)
-
-
 
     # step 4 shortest path with naismith's rules iterating through each link segment
     print('On to step 4')
@@ -131,7 +137,6 @@ def main():
     print('On to step 5')
     step_5 = MapPlotting(shortest_path)
     step_5.show_path()
-
 
 
 if __name__ == '__main__':
