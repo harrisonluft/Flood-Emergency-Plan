@@ -22,5 +22,3 @@ class Contains:
             return False
         else:
             return True
-
-

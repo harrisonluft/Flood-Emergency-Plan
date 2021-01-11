@@ -12,8 +12,9 @@ from MapPlotting import MapPlotting
 import matplotlib.pyplot as plt
 import geopandas as gpd
 
-#path = os.chdir('C:\\Users\\17075\\Assignment_2')
-path = os.chdir('/Users/linchengze/PycharmProjects/Assignment_2')
+
+os.chdir('C:\\Users\\17075\\Assignment_2')
+#path = os.chdir('/Users/linchengze/PycharmProjects/Assignment_2')
 retval = os.getcwd()
 print("Current working directory: %s" % retval)
 
@@ -35,6 +36,28 @@ def main():
     # import data
     input = user_input()
 
+    user_gpd = {'geometry': [Point(input[0][0], input[0][1])]}
+    gdf = gpd.GeoDataFrame(user_gpd, index=[0], crs='EPSG:27700')
+
+    # use task 1 or task 6
+    if one_or_six() == 1:
+        # hardcode extent of bounding box
+        extent = (430000, 80000, 465000, 95000)
+        mbr = Mbr(extent)
+        #  check if input point is within extent
+        mbr.within_extent(input)
+        print('on to step 2')
+
+    else:
+        # task 6
+        step_6 = Contains(gdf, os.path.join('Materials', 'shape', 'isle_of_wight.shp'))
+        if step_6.is_within_geo():
+            print('On to step 2')
+        else:
+            print('Not on the Isle of Wight - Stay where you are!')
+            print('Closing application...')
+            sys.exit(0)
+            
     # hardcode extent of bounding box
     extent = (430000, 80000, 465000, 95000)
     mbr = Mbr(extent)
@@ -44,6 +67,7 @@ def main():
     # Verifying the bounding box works - test points are 1, 2 for fail
     # 450000, 85000 for pass
     print('On to step 2')
+
 
     # import raster data
     user_point = Point(input[0][0], input[0][1])
